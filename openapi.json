@@ -1,0 +1,149 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Prism Demo API",
+    "version": "1.0.0",
+    "description": "Bundled demo spec for the Prism mock server. Replace it with your own OpenAPI spec to mock any API."
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "operationId": "getHealth",
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["status"],
+                  "properties": { "status": { "type": "string", "example": "ok" } }
+                },
+                "example": { "status": "ok" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets": {
+      "get": {
+        "summary": "List pets",
+        "operationId": "listPets",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 10 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of pets",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Pet" } },
+                "example": [
+                  { "id": 1, "name": "Rex", "species": "dog", "status": "available" },
+                  { "id": 2, "name": "Whiskers", "species": "cat", "status": "pending" }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a pet",
+        "operationId": "createPet",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/NewPet" },
+              "example": { "name": "Rex", "species": "dog" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Pet created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Pet" },
+                "example": { "id": 3, "name": "Rex", "species": "dog", "status": "available" }
+              }
+            }
+          },
+          "422": {
+            "description": "Request body failed validation",
+            "content": {
+              "application/problem+json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          }
+        }
+      }
+    },
+    "/pets/{id}": {
+      "get": {
+        "summary": "Get a pet by id",
+        "operationId": "getPetById",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" }, "example": 1 }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single pet",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Pet" },
+                "examples": {
+                  "rex":      { "summary": "A dog", "value": { "id": 1, "name": "Rex",      "species": "dog", "status": "available" } },
+                  "whiskers": { "summary": "A cat", "value": { "id": 2, "name": "Whiskers", "species": "cat", "status": "pending" } }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pet not found (use header 'Prefer: code=404')",
+            "content": {
+              "application/problem+json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Pet": {
+        "type": "object",
+        "required": ["id", "name", "species", "status"],
+        "properties": {
+          "id":      { "type": "integer", "example": 1 },
+          "name":    { "type": "string",  "example": "Rex" },
+          "species": { "type": "string",  "example": "dog" },
+          "status":  { "type": "string", "enum": ["available", "pending", "adopted"], "example": "available" }
+        }
+      },
+      "NewPet": {
+        "type": "object",
+        "required": ["name", "species"],
+        "properties": {
+          "name":    { "type": "string", "example": "Rex" },
+          "species": { "type": "string", "example": "dog" }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "type":   { "type": "string" },
+          "title":  { "type": "string" },
+          "status": { "type": "integer" },
+          "detail": { "type": "string" }
+        }
+      }
+    }
+  }
+}
