@@ -53,7 +53,7 @@ Prism validates every request and response against your spec, so a malformed POS
 
 | Variable | Default | Description |
 |---|---|---|
-| `PORT` | `4010` | Port Prism listens on (Railway wires your domain to it) |
+| `PORT` | Railway-assigned | Port Prism listens on. Railway sets this automatically — no need to touch it. Outside Railway (e.g. local Docker) it defaults to `4010` |
 | `SPEC_PATH` | `/spec/openapi.json` | Path or URL of the OpenAPI document to serve |
 
 ## Alternatives
